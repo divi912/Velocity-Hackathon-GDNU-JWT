@@ -92,10 +92,10 @@ export function Navigation({
           <a
             href={targetLogoPath}
             onClick={e => handleLinkClick(e, targetLogoPath)}
-            aria-label={isRedis ? 'Switch to JWT (Client side)' : 'Switch to Redis (Server side)'}
+            aria-label={isRedis ? 'Switch to Session Sight (Client side)' : 'Switch to Redis (Server side)'}
             title={
               isRedis
-                ? 'Click to transition to JWT Decoded (Client-side proof)'
+                ? 'Click to transition to Session Sight (Client-side proof)'
                 : 'Click to transition to Redis Sessions (Server-side state)'
             }
             className="flex min-h-11 items-center gap-3 group"
@@ -127,7 +127,7 @@ export function Navigation({
                   </>
                 ) : (
                   <>
-                    JWT<span className="mx-1.5 text-neutral-400">/</span>decoded
+                    SESSION<span className="mx-1.5 text-neutral-400">/</span>sight
                   </>
                 )}
               </span>
@@ -138,7 +138,7 @@ export function Navigation({
                     : 'text-neutral-500 group-hover:text-black'
                 }`}
               >
-                {isRedis ? 'Click to flip → JWT' : 'Click to flip → Redis'}
+                {isRedis ? 'Click to flip → Session Sight' : 'Click to flip → Redis'}
               </span>
             </div>
           </a>
@@ -247,7 +247,7 @@ export function Navigation({
             </button>
 
             <a
-              href="https://github.com/divi912/Velocity-Hackathon-GDNU-JWT"
+              href="https://github.com/divi912/Velocity-Hackathon-GDNU-SessionSight"
               target="_blank"
               rel="noreferrer"
               aria-label="View source on GitHub"

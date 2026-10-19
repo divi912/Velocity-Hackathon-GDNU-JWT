@@ -7,14 +7,29 @@ import { DebuggerPage } from './components/DebuggerPage';
 import { SessionsPage } from './components/sessions/SessionsPage';
 import { LoginPage } from './components/LoginPage';
 
-const REPO_BASE = '/Velocity-Hackathon-GDNU-JWT';
+const REPO_BASES = [
+  '/Velocity-Hackathon-GDNU-SessionSight',
+  '/Velocity-Hackathon-GDNU-JWT',
+];
 
 function getCleanPath(pathname: string): string {
   let path = pathname.replace(/\/$/, '') || '/';
-  if (path.toLowerCase().startsWith(REPO_BASE.toLowerCase())) {
-    path = path.slice(REPO_BASE.length) || '/';
+  for (const base of REPO_BASES) {
+    if (path.toLowerCase().startsWith(base.toLowerCase())) {
+      path = path.slice(base.length) || '/';
+      break;
+    }
   }
   return path.replace(/\/$/, '') || '/';
+}
+
+function getActiveRepoBase(pathname: string): string {
+  for (const base of REPO_BASES) {
+    if (pathname.toLowerCase().startsWith(base.toLowerCase())) {
+      return base;
+    }
+  }
+  return '/Velocity-Hackathon-GDNU-SessionSight';
 }
 
 export default function App() {
@@ -27,8 +42,9 @@ export default function App() {
   });
 
   const navigate = (path: string) => {
-    const isGhPages = window.location.pathname.toLowerCase().startsWith(REPO_BASE.toLowerCase());
-    const targetUrl = isGhPages ? `${REPO_BASE}${path === '/' ? '' : path}` : path;
+    const isGhPages = REPO_BASES.some(base => window.location.pathname.toLowerCase().startsWith(base.toLowerCase()));
+    const activeBase = getActiveRepoBase(window.location.pathname);
+    const targetUrl = isGhPages ? `${activeBase}${path === '/' ? '' : path}` : path;
     window.history.pushState({}, '', targetUrl || '/');
     setCurrentPath(path.replace(/\/$/, '') || '/');
     window.scrollTo({ top: 0, behavior: motionEnabled ? 'smooth' : 'auto' });

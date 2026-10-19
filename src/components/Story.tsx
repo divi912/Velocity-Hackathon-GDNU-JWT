@@ -15,8 +15,8 @@ export function Hero({ motionEnabled }: { motionEnabled: boolean }) {
       </div>
       <div className="grid items-center gap-10 lg:grid-cols-[.92fr_1.08fr] lg:gap-3">
         <div className="relative pb-3 lg:pb-10">
-          <motion.p initial={motionEnabled ? { opacity: 0, y: 12 } : false} animate={{ opacity: 1, y: 0 }} transition={{ duration: .7 }} className="section-label mb-6 flex items-center gap-3"><span className="inline-block size-2 bg-black" />JSON WEB TOKENS, FROM THE INSIDE OUT</motion.p>
-          <h1 id="hero-title" className="font-display text-[clamp(86px,11.2vw,172px)] leading-[.91] font-normal tracking-[-.065em]">JWT,<br /><span className="italic">decoded.</span></h1>
+          <motion.p initial={motionEnabled ? { opacity: 0, y: 12 } : false} animate={{ opacity: 1, y: 0 }} transition={{ duration: .7 }} className="section-label mb-6 flex items-center gap-3"><span className="inline-block size-2 bg-black" />JSON WEB TOKENS &amp; SESSIONS, FROM THE INSIDE OUT</motion.p>
+          <h1 id="hero-title" className="font-display text-[clamp(86px,11.2vw,172px)] leading-[.91] font-normal tracking-[-.065em]">Session<br /><span className="italic">Sight.</span></h1>
           <p className="mt-8 max-w-[370px] text-[13px] leading-7 text-neutral-600 md:text-sm">A small string. A whole chain of trust.<br />Follow a token from your browser to the server—and see what happens inside.</p>
           <div className="mt-8 flex flex-wrap items-center gap-5 lg:mt-10">
             <a href="#the-journey" className="button-base bg-black text-white hover:bg-white hover:text-black">Follow the token <ArrowDown size={15} strokeWidth={1.5} /></a>

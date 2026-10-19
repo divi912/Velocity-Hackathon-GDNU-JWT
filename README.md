@@ -1,4 +1,4 @@
-# JWT & Redis Sessions, decoded.
+# Session Sight — JWT & Redis Sessions, Decoded
 
 A dual scroll-driven visual field guide exploring the two fundamental paradigms of modern web identity:
 - **JWT (Client-Side Proof)**: White page, decentralized cryptographic verification, claims travel with the browser.

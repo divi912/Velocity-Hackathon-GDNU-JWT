@@ -3,7 +3,7 @@ import react from '@vitejs/plugin-react';
 import tailwindcss from '@tailwindcss/vite';
 
 export default defineConfig({
-  base: process.env.VITE_BASE || '/Velocity-Hackathon-GDNU-JWT/',
+  base: process.env.VITE_BASE || '/Velocity-Hackathon-GDNU-SessionSight/',
   plugins: [react(), tailwindcss()],
   build: {
     rolldownOptions: {
