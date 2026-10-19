@@ -17,6 +17,15 @@ export default function App() {
     const frame = requestAnimationFrame(() => ScrollTrigger.refresh());
     return () => { active = false; cancelAnimationFrame(frame); };
   }, [motionEnabled]);
+  useEffect(() => {
+    // The browser may look for a hash target before the client-rendered chapters exist.
+    if (debuggerPage || !window.location.hash) return;
+    let active = true;
+    void document.fonts.ready.then(() => {
+      if (active) document.getElementById(window.location.hash.slice(1))?.scrollIntoView({ behavior: 'instant', block: 'start' });
+    });
+    return () => { active = false; };
+  }, [debuggerPage]);
   return <MotionConfig reducedMotion={motionEnabled ? 'never' : 'always'}>
     <Navigation motionEnabled={motionEnabled} onMotionToggle={() => setMotionOverride(!motionEnabled)} debuggerPage={debuggerPage} />
     <main id="main" className="paper-texture">
