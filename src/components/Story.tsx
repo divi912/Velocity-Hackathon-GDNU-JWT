@@ -5,6 +5,7 @@ import { chapters } from '../content/chapters';
 import { encodeText } from '../lib/jwt';
 import { ChapterDiagram } from './Diagrams';
 import { EncryptionLab } from './EncryptionLab';
+import { TrickyGraphic } from './TrickyGraphic';
 
 export function Hero({ motionEnabled }: { motionEnabled: boolean }) {
   return <section className="border-b-4 border-black" aria-labelledby="hero-title">
@@ -84,28 +85,193 @@ export function Story({ motionEnabled }: { motionEnabled: boolean }) {
   </div>;
 }
 
-export function FieldNotes() {
-  const pros = [
-    ['Check it locally.', 'An API can check a signature without looking up a session for every request.'],
-    ['Share trust across services.', 'Several APIs can check tokens from the same trusted issuer.'],
-    ['Carry clear limits.', 'The token can say who it is for and when it expires.'],
+export function FieldNotes({ motionEnabled = true }: { motionEnabled?: boolean }) {
+  const quickPros = [
+    {
+      num: '01',
+      title: 'Zero Database Hits',
+      point: 'The server verifies the signature locally in CPU memory. No database queries needed on any request.',
+      badge: 'FAST',
+    },
+    {
+      num: '02',
+      title: 'Built for Microservices',
+      point: '1 authentication server signs the token; 20 different backend APIs verify it independently without asking the auth server.',
+      badge: 'SCALABLE',
+    },
+    {
+      num: '03',
+      title: 'Self-Contained Data',
+      point: 'The user ID, permissions, and expiration timestamp ride directly inside the token string.',
+      badge: 'PORTABLE',
+    },
+    {
+      num: '04',
+      title: 'Mobile & Cross-Domain Ready',
+      point: 'Sent in standard Authorization: Bearer HTTP headers, avoiding third-party cookie restrictions and CORS blockers.',
+      badge: 'FLEXIBLE',
+    },
   ];
-  const cons = [
-    ['Signed does not mean hidden.', 'Anyone holding a signed token can read its payload. Encryption is a separate step.'],
-    ['A stolen token can be reused.', 'A bearer token works for whoever holds it until the server rejects it.'],
-    ['Logout needs a plan.', 'Instant logout and role changes need extra server checks. Tokens also add size to requests.'],
+
+  const quickCons = [
+    {
+      num: '01',
+      title: 'Impossible to Revoke Instantly',
+      point: 'Logging out or banning a user on the server does NOT stop a stolen token until its expiration timer runs out.',
+      badge: 'SECURITY',
+    },
+    {
+      num: '02',
+      title: 'Not Encrypted (Broad Daylight)',
+      point: 'Base64 is NOT encryption. Anyone who touches the token can read all claims. Never put passwords or secrets inside.',
+      badge: 'LEAK RISK',
+    },
+    {
+      num: '03',
+      title: 'Heavy Network Payload',
+      point: 'A JWT is 500B to 3KB, sent on EVERY request. Across 10 microservice hops, bandwidth multiplies rapidly.',
+      badge: 'OVERHEAD',
+    },
+    {
+      num: '04',
+      title: 'Stale Roles & Permissions',
+      point: 'If an admin demotes a user from Admin to Viewer, the user keeps admin powers until the token expires.',
+      badge: 'DESYNC',
+    },
   ];
+
   return <section id="field-notes" className="border-t-4 border-black">
     <div className="mx-auto max-w-[1536px] px-5 py-16 md:px-10 lg:py-24 xl:px-16">
-      <div className="mb-12 flex items-center justify-between"><span className="section-label">The field notes / pros & cons</span><span className="size-3 border-2 border-black" /></div>
-      <h2 className="max-w-[1000px] font-display text-[clamp(47px,6.8vw,104px)] leading-[1.08] tracking-[-.05em]">Where JWT helps.<br /><span className="italic">Where it gets tricky.</span></h2>
-      <div className="mt-14 grid border-y border-black md:grid-cols-2">
-        {[{ list: pros, positive: true }, { list: cons, positive: false }].map(({ list, positive }) => <div key={String(positive)} className={`py-8 ${positive ? 'md:pr-12' : 'border-t border-black md:border-t-0 md:border-l md:pl-12'}`}>
-          <div className="mb-7 flex items-center gap-3"><span className={`flex size-7 items-center justify-center border border-black ${positive ? 'bg-black text-white' : ''}`}>{positive ? <Plus size={14} /> : <Minus size={14} />}</span><h3 className="section-label">{positive ? 'The useful parts' : 'The trade-offs'}</h3></div>
-          {list.map(([title, text]) => <div key={title} className="mb-6 last:mb-0"><h4 className="text-sm font-medium">{title}</h4><p className="mt-2 max-w-[500px] text-xs leading-6 text-neutral-600">{text}</p></div>)}
-        </div>)}
+      <div className="mb-12 flex items-center justify-between">
+        <span className="section-label">The field notes / pros & cons</span>
+        <span className="size-3 border-2 border-black" />
       </div>
-      <p className="mt-6 max-w-[730px] text-xs leading-7 text-neutral-600">JWT is a format, not a complete login system. A regular server session may be a better fit for a simple app. Choose the tool that fits your needs.</p>
+      <h2 className="max-w-[1000px] font-display text-[clamp(47px,6.8vw,104px)] leading-[1.08] tracking-[-.05em]">
+        Where JWT helps.<br /><span className="italic">Where it gets tricky.</span>
+      </h2>
+      <p className="mt-4 max-w-[680px] text-xs md:text-sm text-neutral-600 leading-relaxed font-mono">
+        The core trade-off in simple terms: JWT trades instant control for zero database lookups. Here is the straightforward breakdown.
+      </p>
+
+      {/* Part 1: High-Level Pros vs Cons Cheat Sheet */}
+      <div className="mt-12 grid grid-cols-1 lg:grid-cols-2 gap-8">
+        {/* THE PROS CARD */}
+        <div className="border-2 border-black p-6 md:p-8 bg-white flex flex-col justify-between">
+          <div>
+            <div className="flex items-center justify-between pb-3 mb-6 border-b border-black">
+              <div className="flex items-center gap-2.5">
+                <span className="size-6 flex items-center justify-center bg-black text-white font-mono text-xs font-bold">
+                  +
+                </span>
+                <span className="section-label font-bold text-black">THE PROS — WHY USE JWT?</span>
+              </div>
+              <span className="text-[10px] font-mono border border-black px-2 py-0.5 font-bold uppercase">
+                ADVANTAGES
+              </span>
+            </div>
+
+            <div className="space-y-6">
+              {quickPros.map(p => (
+                <div key={p.num} className="flex items-start gap-4">
+                  <span className="font-mono text-xs font-bold text-black border border-black px-1.5 py-0.5 shrink-0 mt-0.5">
+                    {p.num}
+                  </span>
+                  <div>
+                    <div className="flex items-center gap-2 mb-1">
+                      <h4 className="font-bold text-sm text-black">{p.title}</h4>
+                      <span className="text-[8px] font-mono border border-neutral-300 px-1 text-neutral-500">{p.badge}</span>
+                    </div>
+                    <p className="text-xs text-neutral-600 leading-relaxed">{p.point}</p>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          <div className="mt-8 pt-4 border-t border-neutral-200 flex items-center justify-between text-[9px] font-mono text-neutral-500">
+            <span>CORE BENEFIT: SPEED & DECOUPLING</span>
+            <span>0 DB QUERIES</span>
+          </div>
+        </div>
+
+        {/* THE CONS CARD */}
+        <div className="border-2 border-black p-6 md:p-8 bg-neutral-50 flex flex-col justify-between">
+          <div>
+            <div className="flex items-center justify-between pb-3 mb-6 border-b border-black">
+              <div className="flex items-center gap-2.5">
+                <span className="size-6 flex items-center justify-center border border-black bg-white text-black font-mono text-xs font-bold">
+                  −
+                </span>
+                <span className="section-label font-bold text-black">THE CONS — WHERE IT GETS TRICKY</span>
+              </div>
+              <span className="text-[10px] font-mono border border-black px-2 py-0.5 font-bold uppercase">
+                LIMITATIONS
+              </span>
+            </div>
+
+            <div className="space-y-6">
+              {quickCons.map(c => (
+                <div key={c.num} className="flex items-start gap-4">
+                  <span className="font-mono text-xs font-bold text-neutral-700 border border-neutral-400 bg-white px-1.5 py-0.5 shrink-0 mt-0.5">
+                    {c.num}
+                  </span>
+                  <div>
+                    <div className="flex items-center gap-2 mb-1">
+                      <h4 className="font-bold text-sm text-black">{c.title}</h4>
+                      <span className="text-[8px] font-mono border border-neutral-400 bg-white px-1 text-neutral-600">{c.badge}</span>
+                    </div>
+                    <p className="text-xs text-neutral-600 leading-relaxed">{c.point}</p>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          <div className="mt-8 pt-4 border-t border-neutral-200 flex items-center justify-between text-[9px] font-mono text-neutral-500">
+            <span>CORE WEAKNESS: LOSS OF INSTANT CONTROL</span>
+            <span>TOKEN IS PERMANENT TILL EXP</span>
+          </div>
+        </div>
+      </div>
+
+      {/* Decision Guide: When to choose what? */}
+      <div className="mt-8 border border-black p-4 bg-white flex flex-wrap items-center justify-between gap-4 font-mono text-xs">
+        <div className="flex items-center gap-2">
+          <span className="font-bold uppercase tracking-wider">RULE OF THUMB:</span>
+          <span className="text-neutral-700">Traditional web app needing instant logout? → <span className="font-bold text-black">Choose Redis Sessions</span>.</span>
+        </div>
+        <div className="text-neutral-700">
+          Decoupled microservices or mobile apps? → <span className="font-bold text-black">Choose JWT (with 15m expiry)</span>.
+        </div>
+      </div>
+
+      {/* Part 2: The In-Depth Motion Type Graphic Dossier (Interactive Deep Dive) */}
+      <div className="mt-16">
+        <div className="mb-6 flex items-center justify-between">
+          <div>
+            <span className="section-label block mb-1">INTERACTIVE SIMULATORS</span>
+            <h3 className="font-display text-2xl font-bold">Inspect Each Tricky Scenario in Action</h3>
+          </div>
+          <span className="text-[10px] font-mono border border-black px-2 py-1">6 SCENARIOS</span>
+        </div>
+        <TrickyGraphic motionEnabled={motionEnabled} />
+      </div>
+
+      {/* Part 3: Architecture Summary Verdict */}
+      <div className="mt-14 border border-black p-6 md:p-8 bg-neutral-50 flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
+        <div>
+          <span className="section-label block mb-2 font-bold">The Architectural Verdict</span>
+          <p className="max-w-[850px] text-xs md:text-sm leading-relaxed text-neutral-700">
+            JWT is a specialized token format, not a complete authentication system. A standard server-side session cookie remains the simpler, safer default for traditional web applications needing instant revocation and minimal network payloads. Choose signed JWTs for decoupled microservices, mobile edge gateways, and cross-domain APIs—and engineer for the tricky trade-offs from day one.
+          </p>
+        </div>
+        <a
+          href="/debugger"
+          className="button-base shrink-0 bg-black text-white hover:bg-white hover:text-black transition-colors"
+        >
+          Open JWT Debugger <ArrowRight size={14} />
+        </a>
+      </div>
     </div>
     <footer className="paper-texture bg-black text-white">
       <div className="mx-auto max-w-[1536px] px-5 pt-14 pb-7 md:px-10 xl:px-16">
