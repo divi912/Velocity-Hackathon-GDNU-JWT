@@ -7,24 +7,36 @@ import { DebuggerPage } from './components/DebuggerPage';
 import { SessionsPage } from './components/sessions/SessionsPage';
 import { LoginPage } from './components/LoginPage';
 
+const REPO_BASE = '/Velocity-Hackathon-GDNU-JWT';
+
+function getCleanPath(pathname: string): string {
+  let path = pathname.replace(/\/$/, '') || '/';
+  if (path.toLowerCase().startsWith(REPO_BASE.toLowerCase())) {
+    path = path.slice(REPO_BASE.length) || '/';
+  }
+  return path.replace(/\/$/, '') || '/';
+}
+
 export default function App() {
   const prefersReducedMotion = useReducedMotion();
   const [motionOverride, setMotionOverride] = useState<boolean | null>(null);
   const motionEnabled = motionOverride ?? !prefersReducedMotion;
 
   const [currentPath, setCurrentPath] = useState(() => {
-    return window.location.pathname.replace(/\/$/, '') || '/';
+    return getCleanPath(window.location.pathname);
   });
 
   const navigate = (path: string) => {
-    window.history.pushState({}, '', path);
+    const isGhPages = window.location.pathname.toLowerCase().startsWith(REPO_BASE.toLowerCase());
+    const targetUrl = isGhPages ? `${REPO_BASE}${path === '/' ? '' : path}` : path;
+    window.history.pushState({}, '', targetUrl || '/');
     setCurrentPath(path.replace(/\/$/, '') || '/');
     window.scrollTo({ top: 0, behavior: motionEnabled ? 'smooth' : 'auto' });
   };
 
   useEffect(() => {
     const handlePopState = () => {
-      setCurrentPath(window.location.pathname.replace(/\/$/, '') || '/');
+      setCurrentPath(getCleanPath(window.location.pathname));
     };
     window.addEventListener('popstate', handlePopState);
     return () => window.removeEventListener('popstate', handlePopState);
