@@ -1,4 +1,5 @@
 import { ArrowUpRight, Check, Minus, Plus } from 'lucide-react';
+import { getRouteUrl } from '../../lib/routes';
 
 export function SessionComparison() {
   const comparisonRows = [
@@ -160,17 +161,18 @@ export function SessionComparison() {
           </p>
           <div className="mt-8 flex justify-center gap-4">
             <a
-              href="/"
+              href={getRouteUrl('/')}
               className="button-base bg-white text-black hover:bg-neutral-200 transition-colors"
             >
               ← Back to JWT Field Guide
             </a>
-            <a
-              href="#playground"
+            <button
+              type="button"
+              onClick={() => document.getElementById('playground')?.scrollIntoView({ behavior: 'smooth' })}
               className="button-base border border-white bg-black text-white hover:bg-white hover:text-black transition-colors"
             >
               Inspect Live in Console ↑
-            </a>
+            </button>
           </div>
         </div>
 
@@ -189,7 +191,7 @@ export function SessionComparison() {
             <a href="https://httpwg.org/specs/rfc6265.html" target="_blank" rel="noreferrer" className="hover:text-white underline">
               RFC 6265 (Cookies) ↗
             </a>
-            <a href="/" className="hover:text-white underline">
+            <a href={getRouteUrl('/')} className="hover:text-white underline">
               JWT Decoded ↗
             </a>
           </div>

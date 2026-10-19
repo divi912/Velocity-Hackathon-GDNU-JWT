@@ -5,6 +5,7 @@ import { claimExplanation, generateJwt, inspectJwt } from '../lib/debugger';
 import type { Inspection } from '../lib/debugger';
 import { AUDIENCE, DEMO_SECRET, ISSUER, parseToken, signToken } from '../lib/jwt';
 import type { Claims } from '../lib/jwt';
+import { getRouteUrl } from '../lib/routes';
 
 type Mode = 'decode' | 'encode';
 
@@ -98,7 +99,7 @@ export function DebuggerPage({ motionEnabled }: { motionEnabled: boolean }) {
   const timeLabel = result?.time === 'valid' ? 'Within its time limit' : result?.time === 'expired' ? 'Token has expired' : result?.time === 'not-active' ? 'Not active yet' : result?.time === 'invalid' ? 'Invalid time claim' : 'No expiry claim';
 
   return <div className="mx-auto max-w-[1536px] px-5 pt-8 pb-12 md:px-10 xl:px-16">
-    <div className="flex items-center justify-between border-b border-black pb-4"><a href="/" className="flex min-h-9 items-center gap-2 text-[10px] underline-offset-4 hover:underline"><ArrowLeft size={13} />Back to the field guide</a><span className="section-label text-neutral-500">Tools / No. 001</span></div>
+    <div className="flex items-center justify-between border-b border-black pb-4"><a href={getRouteUrl('/')} className="flex min-h-9 items-center gap-2 text-[10px] underline-offset-4 hover:underline"><ArrowLeft size={13} />Back to the field guide</a><span className="section-label text-neutral-500">Tools / No. 001</span></div>
     <div className="flex flex-col justify-between gap-6 py-10 lg:flex-row lg:items-end">
       <div><p className="section-label mb-4 flex items-center gap-2"><span className="size-2 bg-black" />The workbench</p><h1 className="font-display text-[clamp(54px,7.2vw,110px)] leading-none tracking-[-.055em]">JWT <span className="italic">debugger.</span></h1></div>
       <p className="max-w-[400px] text-xs leading-7 text-neutral-600">Read a token. Check its signature.<br />Or write your own claims and sign a new one.<br /><span className="text-black">Everything runs here, in your browser.</span></p>
@@ -137,7 +138,7 @@ export function DebuggerPage({ motionEnabled }: { motionEnabled: boolean }) {
         <button type="button" disabled={busy || (mode === 'decode' && !token)} onClick={() => mode === 'encode' ? void generate() : setNonce(value => value + 1)} className="button-base mt-5 bg-black text-white hover:bg-white hover:text-black">{busy ? 'Signing…' : mode === 'encode' ? 'Sign & generate token' : 'Check signature again'}<ArrowRight size={14} /></button>
       </section>
     </div>
-    <div className="mt-6 flex flex-col justify-between gap-3 text-[10px] leading-6 text-neutral-500 md:flex-row"><p>Tokens and keys are processed in this browser. They are not sent to a server.</p><a href="/#signing" className="flex items-center gap-2 text-black underline underline-offset-4">See how signing works <ArrowUpRight size={12} /></a></div>
-    <div className="mt-12 flex items-center justify-between border-t border-black pt-6"><span className="section-label">JWT / decoded</span><a href="/" className="flex min-h-11 items-center gap-2 text-[11px]">Back to the story <ArrowLeft size={13} /></a></div>
+    <div className="mt-6 flex flex-col justify-between gap-3 text-[10px] leading-6 text-neutral-500 md:flex-row"><p>Tokens and keys are processed in this browser. They are not sent to a server.</p><a href={getRouteUrl('/#signing')} className="flex items-center gap-2 text-black underline underline-offset-4">See how signing works <ArrowUpRight size={12} /></a></div>
+    <div className="mt-12 flex items-center justify-between border-t border-black pt-6"><span className="section-label">JWT / decoded</span><a href={getRouteUrl('/')} className="flex min-h-11 items-center gap-2 text-[11px]">Back to the story <ArrowLeft size={13} /></a></div>
   </div>;
 }

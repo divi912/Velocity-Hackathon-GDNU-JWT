@@ -70,12 +70,18 @@ export function SessionStory({ motionEnabled }: { motionEnabled: boolean }) {
 
               {chapter.kind === 'lifecycle-logout' && (
                 <div className="mt-6">
-                  <a
-                    href="#playground"
+                  <button
+                    type="button"
+                    onClick={() => {
+                      const el = document.getElementById('playground');
+                      if (el) {
+                        el.scrollIntoView({ behavior: motionEnabled ? 'smooth' : 'auto' });
+                      }
+                    }}
                     className="button-base bg-white text-black hover:bg-neutral-900 hover:text-white transition-colors"
                   >
                     Open Session Console <ArrowRight size={14} />
-                  </a>
+                  </button>
                 </div>
               )}
             </div>

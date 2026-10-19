@@ -5,6 +5,8 @@ import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { chapters } from '../content/chapters';
 import { sessionChapters } from '../content/sessionChapters';
 
+import { getRouteUrl } from '../lib/routes';
+
 export function Navigation({
   motionEnabled,
   onMotionToggle,
@@ -65,7 +67,7 @@ export function Navigation({
       if (elem) {
         e.preventDefault();
         elem.scrollIntoView({ behavior: motionEnabled ? 'smooth' : 'auto' });
-        window.history.pushState(null, '', path);
+        window.history.pushState(null, '', getRouteUrl(path));
       }
       return;
     }
@@ -97,7 +99,7 @@ export function Navigation({
         <div className="mx-auto flex h-[76px] max-w-[1536px] items-center justify-between gap-4 px-5 md:px-10 xl:px-16">
           {/* Logo with Flip-to-Other-Side Action */}
           <a
-            href={targetLogoPath}
+            href={getRouteUrl(targetLogoPath)}
             onClick={e => handleLinkClick(e, targetLogoPath)}
             aria-label={isRedis ? 'Switch to Session Sight (Client side)' : 'Switch to Redis (Server side)'}
             title={
@@ -153,20 +155,99 @@ export function Navigation({
           {/* Navigation Links */}
           <nav
             aria-label="Main navigation"
-            className="hidden items-center gap-6 text-[10px] tracking-[.12em] uppercase xl:flex 2xl:gap-8"
+            className="hidden items-center gap-5 text-[10px] tracking-[.12em] uppercase xl:flex 2xl:gap-7"
           >
-            {/* Contextual Story Link */}
+            {/* JWT Story Link */}
             <a
-              href={isRedis ? '#why-sessions' : '#the-journey'}
-              onClick={e => handleLinkClick(e, isRedis ? '#why-sessions' : '#the-journey')}
+              href={getRouteUrl('/')}
+              onClick={e => {
+                e.preventDefault();
+                if (currentPath === '/') {
+                  window.scrollTo({ top: 0, behavior: motionEnabled ? 'smooth' : 'auto' });
+                } else if (onNavigate) {
+                  onNavigate('/');
+                }
+              }}
+              className={`py-4 underline-offset-4 hover:underline ${
+                !isRedis && !isDebugger && !isLogin ? 'font-bold underline' : ''
+              }`}
+            >
+              JWT Story
+            </a>
+
+            {/* Redis Session Story Link */}
+            <a
+              href={getRouteUrl('/sessions')}
+              onClick={e => {
+                e.preventDefault();
+                if (currentPath === '/sessions') {
+                  window.scrollTo({ top: 0, behavior: motionEnabled ? 'smooth' : 'auto' });
+                } else if (onNavigate) {
+                  onNavigate('/sessions');
+                }
+              }}
+              className={`py-4 underline-offset-4 hover:underline ${
+                isRedis && !isDebugger && !isLogin ? 'font-bold underline' : ''
+              }`}
+            >
+              Redis Story
+            </a>
+
+            {/* Comparison Link */}
+            <a
+              href={getRouteUrl('/sessions#comparison')}
+              onClick={e => {
+                e.preventDefault();
+                if (currentPath === '/sessions') {
+                  document.getElementById('comparison')?.scrollIntoView({ behavior: motionEnabled ? 'smooth' : 'auto' });
+                  window.history.pushState(null, '', getRouteUrl('/sessions#comparison'));
+                } else if (onNavigate) {
+                  onNavigate('/sessions#comparison');
+                }
+              }}
               className="py-4 underline-offset-4 hover:underline"
             >
-              {isRedis ? 'Session story' : 'JWT story'}
+              Comparison
+            </a>
+
+            {/* Field Notes Link */}
+            <a
+              href={getRouteUrl('/#field-notes')}
+              onClick={e => {
+                e.preventDefault();
+                if (currentPath === '/') {
+                  document.getElementById('field-notes')?.scrollIntoView({ behavior: motionEnabled ? 'smooth' : 'auto' });
+                  window.history.pushState(null, '', getRouteUrl('/#field-notes'));
+                } else if (onNavigate) {
+                  onNavigate('/#field-notes');
+                }
+              }}
+              className="py-4 underline-offset-4 hover:underline"
+            >
+              Field Notes
+            </a>
+
+            {/* Redis Session Console Link */}
+            <a
+              href={getRouteUrl('/sessions#playground')}
+              onClick={e => {
+                e.preventDefault();
+                if (currentPath === '/sessions') {
+                  document.getElementById('playground')?.scrollIntoView({ behavior: motionEnabled ? 'smooth' : 'auto' });
+                  window.history.pushState(null, '', getRouteUrl('/sessions#playground'));
+                } else if (onNavigate) {
+                  onNavigate('/sessions#playground');
+                }
+              }}
+              className="py-4 underline-offset-4 hover:underline flex items-center gap-1.5"
+            >
+              <Server size={12} strokeWidth={1.5} />
+              Redis Console
             </a>
 
             {/* JWT Debugger Link */}
             <a
-              href="/debugger"
+              href={getRouteUrl('/debugger')}
               onClick={e => handleLinkClick(e, '/debugger')}
               aria-current={isDebugger ? 'page' : undefined}
               className={`py-4 underline-offset-4 hover:underline ${
@@ -176,19 +257,9 @@ export function Navigation({
               JWT Debugger
             </a>
 
-            {/* Redis Session Console Link */}
-            <a
-              href={isRedis ? '#playground' : '/sessions#playground'}
-              onClick={e => handleLinkClick(e, isRedis ? '#playground' : '/sessions#playground')}
-              className="py-4 underline-offset-4 hover:underline flex items-center gap-1.5"
-            >
-              <Server size={12} strokeWidth={1.5} />
-              Redis Console
-            </a>
-
             {/* Login Lab Link */}
             <a
-              href="/login"
+              href={getRouteUrl('/login')}
               onClick={e => handleLinkClick(e, '/login')}
               aria-current={isLogin ? 'page' : undefined}
               className={`py-4 underline-offset-4 hover:underline flex items-center gap-1.5 ${
@@ -197,15 +268,6 @@ export function Navigation({
             >
               <Key size={12} strokeWidth={1.5} />
               Login Lab
-            </a>
-
-            {/* Field Notes or Comparison Link */}
-            <a
-              href={isRedis ? '#comparison' : '#field-notes'}
-              onClick={e => handleLinkClick(e, isRedis ? '#comparison' : '#field-notes')}
-              className="py-4 underline-offset-4 hover:underline"
-            >
-              {isRedis ? 'Comparison' : 'Field notes'}
             </a>
           </nav>
 
@@ -217,7 +279,7 @@ export function Navigation({
               }`}
             >
               <a
-                href="/"
+                href={getRouteUrl('/')}
                 onClick={e => handleLinkClick(e, '/')}
                 className={`px-2.5 py-1 transition-colors ${
                   !isRedis
@@ -228,7 +290,7 @@ export function Navigation({
                 JWT (CLIENT)
               </a>
               <a
-                href="/sessions"
+                href={getRouteUrl('/sessions')}
                 onClick={e => handleLinkClick(e, '/sessions')}
                 className={`px-2.5 py-1 transition-colors ${
                   isRedis

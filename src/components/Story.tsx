@@ -3,6 +3,7 @@ import { ArrowDown, ArrowDownRight, ArrowRight, ArrowUpRight, Check, Minus, Plus
 import { motion } from 'framer-motion';
 import { chapters } from '../content/chapters';
 import { encodeText } from '../lib/jwt';
+import { getRouteUrl } from '../lib/routes';
 import { ChapterDiagram } from './Diagrams';
 import { EncryptionLab } from './EncryptionLab';
 import { TrickyGraphic } from './TrickyGraphic';
@@ -19,8 +20,19 @@ export function Hero({ motionEnabled }: { motionEnabled: boolean }) {
           <h1 id="hero-title" className="font-display text-[clamp(86px,11.2vw,172px)] leading-[.91] font-normal tracking-[-.065em]">Session<br /><span className="italic">Sight.</span></h1>
           <p className="mt-8 max-w-[370px] text-[13px] leading-7 text-neutral-600 md:text-sm">A small string. A whole chain of trust.<br />Follow a token from your browser to the server—and see what happens inside.</p>
           <div className="mt-8 flex flex-wrap items-center gap-5 lg:mt-10">
-            <a href="#the-journey" className="button-base bg-black text-white hover:bg-white hover:text-black">Follow the token <ArrowDown size={15} strokeWidth={1.5} /></a>
-            <a href="/debugger" className="flex min-h-11 items-center gap-2 text-[11px] underline underline-offset-4">Open the debugger <ArrowUpRight size={14} /></a>
+            <button
+              type="button"
+              onClick={() => {
+                const el = document.querySelector('article[data-scene]');
+                if (el) {
+                  el.scrollIntoView({ behavior: motionEnabled ? 'smooth' : 'auto' });
+                }
+              }}
+              className="button-base bg-black text-white hover:bg-white hover:text-black"
+            >
+              Follow the token <ArrowDown size={15} strokeWidth={1.5} />
+            </button>
+            <a href={getRouteUrl('/debugger')} className="flex min-h-11 items-center gap-2 text-[11px] underline underline-offset-4">Open the debugger <ArrowUpRight size={14} /></a>
           </div>
         </div>
         <motion.figure initial={motionEnabled ? { opacity: 0 } : false} animate={{ opacity: 1 }} transition={{ duration: 1, delay: .2 }} className="min-w-0 border border-black">
@@ -73,7 +85,7 @@ export function Story({ motionEnabled }: { motionEnabled: boolean }) {
           {chapter.kind === 'encoding' && <Encoder />}
           {chapter.kind === 'encryption' && <EncryptionLab />}
           {chapter.kind === 'signing' && <p className="mt-5 text-[10px] leading-6 text-neutral-500">HS256: one shared secret signs and checks.<br />RS256: a private key signs; a public key checks.</p>}
-          {chapter.kind === 'expiry' && <a href="/debugger" className="button-base mt-6 bg-black text-white hover:bg-white hover:text-black">Open the JWT debugger <ArrowRight size={14} /></a>}
+          {chapter.kind === 'expiry' && <a href={getRouteUrl('/debugger')} className="button-base mt-6 bg-black text-white hover:bg-white hover:text-black">Open the JWT debugger <ArrowRight size={14} /></a>}
         </div>
         <figure className="min-w-0 self-center border border-black">
           <div className="flex justify-between gap-2 border-b border-black px-4 py-3"><span className="section-label">Fig. {chapter.number} / {chapter.label}</span><span className="section-label text-neutral-500">{motionEnabled ? 'Scroll to play ↓' : 'Complete view'}</span></div>
@@ -266,7 +278,7 @@ export function FieldNotes({ motionEnabled = true }: { motionEnabled?: boolean }
           </p>
         </div>
         <a
-          href="/debugger"
+          href={getRouteUrl('/debugger')}
           className="button-base shrink-0 bg-black text-white hover:bg-white hover:text-black transition-colors"
         >
           Open JWT Debugger <ArrowRight size={14} />
@@ -275,7 +287,7 @@ export function FieldNotes({ motionEnabled = true }: { motionEnabled?: boolean }
     </div>
     <footer className="paper-texture bg-black text-white">
       <div className="mx-auto max-w-[1536px] px-5 pt-14 pb-7 md:px-10 xl:px-16">
-        <div className="flex items-start justify-between gap-6"><p className="font-display text-[clamp(62px,10vw,150px)] leading-none tracking-[-.055em]">Trust, but <span className="italic">verify.</span></p><a href="#" aria-label="Back to top" className="mt-3 flex size-12 shrink-0 items-center justify-center border border-white hover:bg-white hover:text-black"><ArrowUpRight size={23} strokeWidth={1} /></a></div>
+        <div className="flex items-start justify-between gap-6"><p className="font-display text-[clamp(62px,10vw,150px)] leading-none tracking-[-.055em]">Trust, but <span className="italic">verify.</span></p><button type="button" onClick={() => window.scrollTo({ top: 0, behavior: motionEnabled ? 'smooth' : 'auto' })} aria-label="Back to top" className="mt-3 flex size-12 shrink-0 items-center justify-center border border-white hover:bg-white hover:text-black"><ArrowUpRight size={23} strokeWidth={1} /></button></div>
         <div className="mt-12 flex flex-col justify-between gap-5 border-t border-neutral-700 pt-6 text-[9px] leading-6 text-neutral-400 md:flex-row"><p>JWT / decoded<br />Built for curious minds. All examples run in your browser.</p><div className="flex flex-wrap gap-5">{[['JWT', '7519'], ['Signing', '7515'], ['Encryption', '7516'], ['Safe use', '8725']].map(([label, rfc]) => <a key={rfc} href={`https://www.rfc-editor.org/rfc/rfc${rfc}`} target="_blank" rel="noreferrer" className="underline underline-offset-4 hover:text-white">{label} ↗</a>)}</div></div>
       </div>
     </footer>

@@ -24,6 +24,7 @@ import {
 import { signToken, parseToken, DEMO_SECRET } from '../lib/jwt';
 import { SessionSimulator } from '../lib/sessionSimulation';
 import { AuthNetworkDiagram } from './AuthNetworkDiagram';
+import { getRouteUrl } from '../lib/routes';
 
 export type AuthParadigm = 'jwt' | 'redis';
 
@@ -226,7 +227,7 @@ export function LoginPage({
         <div className="mb-8 flex flex-wrap items-center justify-between gap-4 border-b pb-4 border-current">
           <div className="flex items-center gap-3">
             <a
-              href="/"
+              href={getRouteUrl('/')}
               onClick={e => {
                 if (onNavigate) {
                   e.preventDefault();

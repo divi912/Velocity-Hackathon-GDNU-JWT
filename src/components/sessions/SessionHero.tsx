@@ -1,6 +1,7 @@
 import { ArrowDown, ArrowDownRight, ArrowUpRight } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { SessionDiagram } from './SessionDiagram';
+import { getRouteUrl } from '../../lib/routes';
 
 export function SessionHero({ motionEnabled }: { motionEnabled: boolean }) {
   return (
@@ -34,20 +35,26 @@ export function SessionHero({ motionEnabled }: { motionEnabled: boolean }) {
               Follow a session ID from the browser into memory—and see how server-side state guarantees instant revocation and absolute confidentiality.
             </p>
             <div className="mt-8 flex flex-wrap items-center gap-5 lg:mt-10">
-              <a
-                href="#why-sessions"
-                className="button-base bg-white text-black hover:bg-neutral-900 hover:text-white transition-colors"
+              <button
+                type="button"
+                onClick={() => {
+                  document.querySelector('article[data-scene]')?.scrollIntoView({ behavior: motionEnabled ? 'smooth' : 'auto' });
+                }}
+                className="button-base bg-white text-black hover:bg-neutral-900 hover:text-white transition-colors cursor-pointer"
               >
                 Follow the session <ArrowDown size={15} strokeWidth={1.5} />
-              </a>
-              <a
-                href="#playground"
-                className="flex min-h-11 items-center gap-2 text-[11px] text-white underline underline-offset-4 hover:text-neutral-300"
+              </button>
+              <button
+                type="button"
+                onClick={() => {
+                  document.getElementById('playground')?.scrollIntoView({ behavior: motionEnabled ? 'smooth' : 'auto' });
+                }}
+                className="flex min-h-11 items-center gap-2 text-[11px] text-white underline underline-offset-4 hover:text-neutral-300 cursor-pointer"
               >
                 Open session console <ArrowUpRight size={14} />
-              </a>
+              </button>
               <a
-                href="/"
+                href={getRouteUrl('/')}
                 className="flex min-h-11 items-center gap-2 text-[11px] text-neutral-400 hover:text-white"
               >
                 ← Switch to JWT (client-side)
