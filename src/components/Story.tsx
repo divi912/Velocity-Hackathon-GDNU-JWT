@@ -19,7 +19,7 @@ export function Hero({ motionEnabled }: { motionEnabled: boolean }) {
           <p className="mt-8 max-w-[370px] text-[13px] leading-7 text-neutral-600 md:text-sm">A small string. A whole chain of trust.<br />Follow a token from your browser to the server—and see what happens inside.</p>
           <div className="mt-8 flex flex-wrap items-center gap-5 lg:mt-10">
             <a href="#the-journey" className="button-base bg-black text-white hover:bg-white hover:text-black">Follow the token <ArrowDown size={15} strokeWidth={1.5} /></a>
-            <a href="#playground" className="flex min-h-11 items-center gap-2 text-[11px] underline underline-offset-4">Try the playground <ArrowUpRight size={14} /></a>
+            <a href="/debugger" className="flex min-h-11 items-center gap-2 text-[11px] underline underline-offset-4">Open the debugger <ArrowUpRight size={14} /></a>
           </div>
         </div>
         <motion.figure initial={motionEnabled ? { opacity: 0 } : false} animate={{ opacity: 1 }} transition={{ duration: 1, delay: .2 }} className="min-w-0 border border-black">
@@ -30,7 +30,7 @@ export function Hero({ motionEnabled }: { motionEnabled: boolean }) {
       </div>
       <div className="mt-9 flex items-center justify-between border-t border-black pt-5 lg:mt-10">
         <span className="section-label flex items-center gap-3"><ArrowDownRight size={17} strokeWidth={1} />Scroll to uncover the process</span>
-        <span className="section-label hidden text-neutral-500 sm:inline">7 chapters · 1 hands-on playground</span>
+        <span className="section-label hidden text-neutral-500 sm:inline">7 chapters · a working JWT debugger</span>
       </div>
     </div>
   </section>;
@@ -72,7 +72,7 @@ export function Story({ motionEnabled }: { motionEnabled: boolean }) {
           {chapter.kind === 'encoding' && <Encoder />}
           {chapter.kind === 'encryption' && <EncryptionLab />}
           {chapter.kind === 'signing' && <p className="mt-5 text-[10px] leading-6 text-neutral-500">HS256: one shared secret signs and checks.<br />RS256: a private key signs; a public key checks.</p>}
-          {chapter.kind === 'expiry' && <a href="#playground" className="button-base mt-6 bg-black text-white hover:bg-white hover:text-black">Put it to the test <ArrowRight size={14} /></a>}
+          {chapter.kind === 'expiry' && <a href="/debugger" className="button-base mt-6 bg-black text-white hover:bg-white hover:text-black">Open the JWT debugger <ArrowRight size={14} /></a>}
         </div>
         <figure className="min-w-0 self-center border border-black">
           <div className="flex justify-between gap-2 border-b border-black px-4 py-3"><span className="section-label">Fig. {chapter.number} / {chapter.label}</span><span className="section-label text-neutral-500">{motionEnabled ? 'Scroll to play ↓' : 'Complete view'}</span></div>

@@ -1,4 +1,5 @@
-import { useId, useLayoutEffect, useRef, useState } from 'react';
+import { useEffect, useId, useLayoutEffect, useRef, useState } from 'react';
+import { Maximize2, X } from 'lucide-react';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { MotionPathPlugin } from 'gsap/MotionPathPlugin';
@@ -91,8 +92,9 @@ function Encoding({ prefix }: { prefix: string }) {
   </>;
 }
 
-function Signing({ prefix }: { prefix: string }) {
+function Signing({ prefix, staticView }: { prefix: string; staticView: boolean }) {
   return <>
+    <g className="signing-process" transform={staticView ? 'translate(30 -20) scale(.9)' : undefined}>
     <text x="32" y="57" fontSize="10" letterSpacing="2">SIGNING HAPPENS INSIDE THE ISSUER</text>
     <rect x="250" y="91" width="255" height="315" fill="#f5f5f5" stroke="black" strokeDasharray="5 5" />
     <text x="267" y="116" fontSize="9" letterSpacing="1">SERVER BOUNDARY</text>
@@ -104,7 +106,16 @@ function Signing({ prefix }: { prefix: string }) {
     <path className="draw path-back" d="M468 208H565V308" fill="none" stroke="black" markerEnd={`url(#${prefix}-arrow)`} />
     <g transform="translate(515 327)"><g className="signature-result"><rect width="101" height="55" fill="black" /><text x="50" y="23" fill="white" textAnchor="middle" fontSize="10">32 BYTES</text><text x="50" y="41" fill="#a3a3a3" textAnchor="middle" fontSize="8">→ Base64url</text></g></g>
     <Packet className="packet-a" label="H.P" /><Packet className="packet-b" label="SIG" />
-    <g className="reveal"><text x="32" y="461" fontSize="10">The output leaves. The secret stays.</text><path d="M410 454h205" stroke="black" /></g>
+    </g>
+    <g className="assembled-token">
+      <rect x="24" y="362" width="597" height="116" fill="white" stroke="black" strokeWidth="1.5" />
+      <text x="40" y="383" fontSize="9" letterSpacing="1">THE COMPLETE TOKEN / HS256 / EXAMPLE USER 42</text>
+      <g className="assembled-header"><text x="40" y="410" fontSize="8.5">eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9</text><path className="part-underline" d="M40 419h184" stroke="black" strokeWidth="1.5" /><text x="132" y="443" textAnchor="middle" fontSize="9">HEADER</text><text x="132" y="462" textAnchor="middle" fontSize="8" fill="#525252">Base64url</text></g>
+      <text x="225" y="410" fontSize="10">.</text>
+      <g className="assembled-payload"><text x="232" y="410" fontSize="8.5">eyJzdWIiOiI0MiJ9</text><path className="part-underline" d="M232 419h82" stroke="black" strokeWidth="1.5" /><text x="273" y="443" textAnchor="middle" fontSize="9">PAYLOAD</text><text x="273" y="462" textAnchor="middle" fontSize="8" fill="#525252">Base64url</text></g>
+      <text x="318" y="410" fontSize="10">.</text>
+      <g className="assembled-signature"><text x="326" y="410" fontSize="8.5">tCPlRnX0wtE8ViPs--v6F94pWVVCItKk39iOhBIx3lQ</text><path className="part-underline" d="M326 419h220" stroke="black" strokeWidth="1.5" /><text x="436" y="443" textAnchor="middle" fontSize="9">SIGNATURE</text><text x="436" y="462" textAnchor="middle" fontSize="8" fill="#525252">Base64url of the HMAC bytes</text></g>
+    </g>
   </>;
 }
 
@@ -140,33 +151,44 @@ function Verification({ prefix }: { prefix: string }) {
   </>;
 }
 
-function Expiry() {
+function Expiry({ staticView }: { staticView: boolean }) {
   return <>
     <text x="32" y="57" fontSize="10" letterSpacing="2">THE SIGNATURE STAYS. THE TIME RUNS OUT.</text>
     <g transform="translate(62 106)"><rect width="520" height="61" fill="white" stroke="black" /><text x="22" y="36" fontSize="12">Signature</text><path d="M467 30l7 7 14-17" fill="none" stroke="black" strokeWidth="2" /><text x="350" y="36" fontSize="10">STILL VALID</text></g>
     <path d="M61 259H582" stroke="black" strokeWidth="1.5" />
     {[62, 140, 218, 296, 374, 452, 530, 582].map((x, i) => <g key={x}><path d={`M${x} 249v20`} stroke="black" /><text x={x} y="291" fontSize="8" textAnchor="middle">{i === 0 ? 'issued' : i === 5 ? 'exp' : `${i}m`}</text></g>)}
     <path d="M452 197V320" stroke="black" strokeDasharray="4 5" /><text x="452" y="184" textAnchor="middle" fontSize="10">EXPIRY</text>
-    <g transform="translate(62 226)"><g className="clock-head"><rect x="-18" y="-18" width="36" height="36" fill="black" /><path d="M0-10v10l6 4" stroke="white" fill="none" strokeWidth="1.5" /></g></g>
+    <g transform={`translate(${staticView ? 550 : 62} 226)`}><g className="clock-head"><rect x="-18" y="-18" width="36" height="36" fill="black" /><path d="M0-10v10l6 4" stroke="white" fill="none" strokeWidth="1.5" /></g></g>
     <g transform="translate(62 350)"><g className="time-valid"><rect width="520" height="62" fill="white" stroke="black" /><text x="260" y="37" fontSize="12" textAnchor="middle">BEFORE exp → REQUEST ALLOWED</text></g><g className="time-expired"><rect width="520" height="62" fill="black" /><text x="260" y="37" fontSize="12" textAnchor="middle" fill="white">AT / AFTER exp → TOKEN EXPIRED</text></g></g>
     <text x="322" y="458" textAnchor="middle" fontSize="10">A new token needs a new signature.</text>
   </>;
 }
 
-export function ChapterDiagram({ kind, motionEnabled, hero = false }: { kind: DiagramKind; motionEnabled: boolean; hero?: boolean }) {
+export function ChapterDiagram({ kind, motionEnabled, hero = false, enlarged = false }: { kind: DiagramKind; motionEnabled: boolean; hero?: boolean; enlarged?: boolean }) {
   const ref = useRef<HTMLDivElement>(null);
   const progress = useRef<HTMLDivElement>(null);
   const [step, setStep] = useState(0);
+  const [expanded, setExpanded] = useState(false);
+  const dialog = useRef<HTMLDialogElement>(null);
   const prefix = `scene-${useId().replace(/:/g, '')}`;
   const steps: Record<DiagramKind, string[]> = {
     journey: ['The browser sends a login request.', 'The server checks the sample login.', 'The issuer creates and signs a token.', 'The token returns. The key stays behind.'],
     anatomy: ['Start with a single signed token.', 'The header names the signing method.', 'The payload carries the user claims.', 'The signature makes changes detectable.'],
     encoding: ['Start with readable JSON text.', 'UTF-8 turns the text into bytes.', 'Base64url writes those bytes as text.', 'The same data. No secret key needed.'],
-    signing: ['Join the encoded header and payload.', 'Bring the server secret into HMAC.', 'HMAC-SHA256 computes 32 bytes.', 'Encode the signature. Send the token.'],
+    signing: ['Join the encoded header and payload.', 'Bring the server secret into HMAC.', 'HMAC-SHA256 computes 32 bytes.', 'Base64url signature + header.payload → full token.'],
     encryption: ['Start with a signed JWT.', 'AES-GCM uses a separate secret key.', 'The envelope hides the signed token.', 'Decrypt the envelope. Then verify inside.'],
     verification: ['The browser sends a bearer token.', 'The API checks its method and signature.', 'Check who, which API, and the time.', 'Check the route permission. Send a reply.'],
     expiry: ['The token has just been issued.', 'The signature passes. Time remains.', 'The server clock approaches exp.', 'Past exp: reject it, even if it is signed.'],
   };
+
+  useEffect(() => {
+    if (!expanded || !dialog.current) return;
+    const modal = dialog.current;
+    const previousOverflow = document.body.style.overflow;
+    modal.showModal();
+    document.body.style.overflow = 'hidden';
+    return () => { modal.close(); document.body.style.overflow = previousOverflow; };
+  }, [expanded]);
 
   useLayoutEffect(() => {
     if (!ref.current || !motionEnabled) return;
@@ -206,6 +228,10 @@ export function ChapterDiagram({ kind, motionEnabled, hero = false }: { kind: Di
       if (kind === 'signing') {
         tl.fromTo('.secret-key', { y: 28, opacity: .2 }, { y: 0, opacity: 1, duration: 2 }, 2.5);
         tl.fromTo('.machine-scan', { scaleX: 0, transformOrigin: 'left center' }, { scaleX: 1, duration: 3 }, 3.2);
+        tl.to('.signing-process', { x: 30, y: -20, scale: .9, svgOrigin: '0 0', duration: 1.8, ease: 'power2.inOut' }, 6.7);
+        tl.fromTo('.assembled-token', { opacity: 0, y: 30 }, { opacity: 1, y: 0, duration: 1.4 }, 7.4);
+        tl.fromTo(['.assembled-header', '.assembled-payload', '.assembled-signature'], { y: -25, opacity: 0 }, { y: 0, opacity: 1, stagger: .35, duration: .8 }, 7.9);
+        tl.fromTo('.part-underline', { scaleX: 0, transformOrigin: 'left center' }, { scaleX: 1, stagger: .2, duration: .6 }, 8.6);
       }
       if (kind === 'encryption') {
         tl.fromTo('.privacy-shutter', { scaleX: 0, transformOrigin: 'center' }, { scaleX: 1, duration: 2 }, 2.5);
@@ -235,14 +261,20 @@ export function ChapterDiagram({ kind, motionEnabled, hero = false }: { kind: Di
       {kind === 'journey' && <Journey prefix={prefix} />}
       {kind === 'anatomy' && <Anatomy />}
       {kind === 'encoding' && <Encoding prefix={prefix} />}
-      {kind === 'signing' && <Signing prefix={prefix} />}
+      {kind === 'signing' && <Signing prefix={prefix} staticView={!motionEnabled} />}
       {kind === 'encryption' && <Encryption prefix={prefix} />}
       {kind === 'verification' && <Verification prefix={prefix} />}
-      {kind === 'expiry' && <Expiry />}
+      {kind === 'expiry' && <Expiry staticView={!motionEnabled} />}
     </svg>
     <div className="relative border-t border-neutral-200 px-4 py-3">
       <div ref={progress} className="absolute top-0 left-0 h-[2px] w-full origin-left bg-black" />
       <div className="flex items-center gap-3 text-[9px] leading-5"><span className="shrink-0 border border-black px-1.5 text-[8px]">{motionEnabled ? `0${step + 1}` : '↳'}</span><span>{steps[kind][motionEnabled ? step : 3]}</span></div>
     </div>
+    {!enlarged && <button type="button" onClick={() => setExpanded(true)} className="flex min-h-11 w-full items-center justify-center gap-2 border-t border-neutral-200 px-4 text-[11px] hover:bg-black hover:text-white sm:hidden"><Maximize2 size={13} />View a larger diagram</button>}
+    {expanded && <dialog ref={dialog} onCancel={event => { event.preventDefault(); setExpanded(false); }} onClose={() => setExpanded(false)} className="fixed inset-0 m-0 h-dvh max-h-none w-screen max-w-none bg-white p-0 text-black backdrop:bg-black/50">
+      <div className="flex items-center justify-between border-b border-black px-5 py-3"><h3 className="text-sm capitalize">{kind} / full diagram</h3><button type="button" onClick={() => setExpanded(false)} className="flex size-11 items-center justify-center" aria-label="Close enlarged diagram"><X size={21} /></button></div>
+      <p className="border-b border-neutral-300 px-5 py-4 text-xs leading-6">Swipe across to read the labels. Motion is paused in this larger view.</p>
+      <div className="max-h-[calc(100dvh-180px)] overflow-auto"><div className="w-[960px]"><ChapterDiagram kind={kind} motionEnabled={false} enlarged /></div></div>
+    </dialog>}
   </div>;
 }

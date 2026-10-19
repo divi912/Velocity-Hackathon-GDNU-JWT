@@ -86,8 +86,14 @@ After the laboratory, include the final learning section, “Where JWT helps. Wh
 
 ## Scope control
 
-Prioritize the core narrative, server graphics, and real interactive verification. Full OAuth/OIDC flows, encryption implementations, production refresh-token rotation, and live backend authentication are out of scope. Explanations acknowledge those boundaries rather than simulate unsupported guarantees.
+Prioritize the core narrative, server graphics, and real interactive verification. Full OAuth/OIDC flows, production refresh-token rotation, and live backend authentication are out of scope. Explanations acknowledge those boundaries rather than simulate unsupported guarantees.
 
 
 ## Approved additions during implementation
 The user requested TypeScript and Tailwind CSS instead of JavaScript and authored layout CSS, a working encryption/decryption section in the middle, and a push to https://github.com/divi912/Velocity-Hackathon-GDNU-JWT.git. The story now has seven chapters; encryption sits between signing and API verification. Use a real compact JWE wrapper with direct A256GCM encryption around the signed token. Actual encryption is now in scope; a production backend and deployment remain out of scope.
+
+## Final user-directed changes
+
+The user replaced the inline token laboratory with a JWT.io-style debugger on its own `/debugger` page. This final requirement supersedes the earlier inline laboratory description. The story links to the debugger and ends with pros and cons. The debugger has Decoder and Encoder modes, generic readable token inspection, separate signature and time statuses, editable JSON for generation, an editable shared secret, Base64url key mode, copy/clear/load-example actions, and plain-language claim explanations. It supports HS256 explicitly; it does not pretend to verify unsupported algorithms or decide API permissions. Results are tied to their exact token/key inputs so older success results disappear immediately when inputs change.
+
+The user also requested a complete signing output graphic. The signing scene now follows HMAC and Base64url signature creation with assembly of a complete tested example token, showing separate underlines and labels for the header, payload, and signature. Phone layouts provide a native modal enlarged view for full-size diagram labels. The static expiry diagram places its clock after expiry to match its expired result.

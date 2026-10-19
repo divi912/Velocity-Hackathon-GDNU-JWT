@@ -31,19 +31,20 @@ npm run preview  # serve the production build locally
 5. **Encryption** — a signed token goes into a five-part JWE envelope. Encrypt and decrypt it using real AES-256-GCM.
 6. **Verification** — open the API server to see signature, claim, and permission checks.
 7. **Expiry** — move beyond `exp` while the signature stays valid.
-8. **Playground** — edit claims, change routes, move the clock, and inspect the exact rejection reason.
+8. **JWT debugger** — a separate `/debugger` page with Decoder and Encoder modes, editable token and key inputs, JSON views, claim explanations, and separate signature/time results.
 9. **Pros and cons** — where JWTs help and what still needs care.
 
 Scroll down to play the diagrams and up to reverse them. The motion control in the header switches to complete static diagrams. The site also respects the operating system's reduced-motion preference.
 
-## Working experiments
+## Working tools
 
-- **Make me admin:** changes the payload but keeps the old signature; signature verification fails.
-- **Expire the token:** advances a simulated server clock; the signature passes and the time check fails.
-- **Use the wrong API:** issues a correctly signed token for a different audience; the audience check fails.
-- **Request `/admin`:** a valid student token passes validation but fails the permission check.
-- **Look under the hood:** inspect or edit the full token, compare the expected and supplied signatures, and view the original signing input.
-- **Encrypt / Decrypt:** wrap a signed JWT with compact JWE using direct key mode and AES-256-GCM, then decrypt and verify the inner signature.
+- **Decoder:** paste a signed JWT and inspect its header, payload, and claim meanings. Enter its key to check the signature. Editing the token or key immediately hides any result belonging to older inputs.
+- **Encoder:** edit header and payload JSON, enter a secret, and sign a new token. This study debugger supports HS256 and clearly labels other algorithms as unsupported.
+- **Key formats:** use plain text or raw Base64url-encoded secret bytes. Copy and clear controls are included.
+- **Separate time result:** a correct signature can appear alongside an expired-token result. Generic tokens do not have to include this lesson's issuer, role, or audience.
+- **Encrypt / Decrypt:** in the middle of the story, wrap a signed JWT with compact JWE using direct key mode and AES-256-GCM, then decrypt and verify the inner signature.
+- **Signing scene:** watch the HMAC step produce a signature, then assemble a complete example token with underlined header, payload, and signature segments.
+- **Phone diagrams:** open the larger view and swipe across to read the full-size labels; motion is paused while the larger view is open.
 
 ## Important demo boundary
 
@@ -63,11 +64,12 @@ src/
     Story.tsx               Editorial layout and lesson text
     Diagrams.tsx            SVG graphics and GSAP scroll timelines
     EncryptionLab.tsx       Working encryption/decryption experiment
-    TokenLab.tsx            Editable token and API check trace
+    DebuggerPage.tsx        Separate Decoder and Encoder workbench
   content/chapters.ts        Seven plain-language chapters
   lib/
     jwt.ts                  Base64url, HS256, claim checks, permissions
     jwe.ts                  AES-GCM compact encrypted envelopes
+    debugger.ts             Generic HS256 inspection and generation
     *.test.ts               Tests using real cryptographic operations
   index.css                 Tailwind entry, fonts, theme, base rules
 ```
