@@ -12,7 +12,15 @@ const REPO_BASES = [
   '/Velocity-Hackathon-GDNU-JWT',
 ];
 
-function getCleanPath(pathname: string): string {
+function getCleanPath(pathname: string, hash: string = ''): string {
+  // Support hash routing fallback if present: #/sessions, #/debugger, #/login
+  if (hash.startsWith('#/')) {
+    return hash.slice(1).replace(/\/$/, '') || '/';
+  }
+  if (hash.startsWith('#') && ['#sessions', '#debugger', '#login', '#auth'].includes(hash)) {
+    return '/' + hash.slice(1);
+  }
+
   let path = pathname.replace(/\/$/, '') || '/';
   for (const base of REPO_BASES) {
     if (path.toLowerCase().startsWith(base.toLowerCase())) {
@@ -38,25 +46,92 @@ export default function App() {
   const motionEnabled = motionOverride ?? !prefersReducedMotion;
 
   const [currentPath, setCurrentPath] = useState(() => {
-    return getCleanPath(window.location.pathname);
+    return getCleanPath(window.location.pathname, window.location.hash);
   });
 
-  const navigate = (path: string) => {
-    const isGhPages = REPO_BASES.some(base => window.location.pathname.toLowerCase().startsWith(base.toLowerCase()));
+  const navigate = (rawTarget: string) => {
+    const [rawPath, hash] = rawTarget.split('#');
+    // If target is pure hash, stay on current path
+    const targetPath = rawPath || currentPath;
+    const cleanPath = getCleanPath(targetPath);
+
+    const isGhPages = REPO_BASES.some(base =>
+      window.location.pathname.toLowerCase().startsWith(base.toLowerCase())
+    );
     const activeBase = getActiveRepoBase(window.location.pathname);
-    const targetUrl = isGhPages ? `${activeBase}${path === '/' ? '' : path}` : path;
-    window.history.pushState({}, '', targetUrl || '/');
-    setCurrentPath(path.replace(/\/$/, '') || '/');
-    window.scrollTo({ top: 0, behavior: motionEnabled ? 'smooth' : 'auto' });
+    const pathForUrl = cleanPath === '/' ? '' : cleanPath;
+    const baseWithRoute = isGhPages ? `${activeBase}${pathForUrl}` : (cleanPath || '/');
+    const finalUrl = hash ? `${baseWithRoute || activeBase || '/'}#${hash}` : (baseWithRoute || '/');
+
+    window.history.pushState({}, '', finalUrl);
+    setCurrentPath(cleanPath);
+
+    if (hash) {
+      setTimeout(() => {
+        const el = document.getElementById(hash);
+        if (el) {
+          el.scrollIntoView({ behavior: motionEnabled ? 'smooth' : 'auto' });
+        }
+      }, 50);
+    } else {
+      window.scrollTo({ top: 0, behavior: motionEnabled ? 'smooth' : 'auto' });
+    }
   };
 
   useEffect(() => {
     const handlePopState = () => {
-      setCurrentPath(getCleanPath(window.location.pathname));
+      setCurrentPath(getCleanPath(window.location.pathname, window.location.hash));
     };
     window.addEventListener('popstate', handlePopState);
     return () => window.removeEventListener('popstate', handlePopState);
   }, []);
+
+  // Intercept all internal <a> link clicks globally to prevent breaking GitHub Pages subpaths
+  useEffect(() => {
+    const handleGlobalClick = (e: MouseEvent) => {
+      const target = e.target as HTMLElement | null;
+      const anchor = target?.closest('a');
+      if (!anchor) return;
+
+      // Ignore modified clicks (open in new tab/window)
+      if (e.metaKey || e.ctrlKey || e.shiftKey || e.altKey || e.button !== 0) return;
+
+      const href = anchor.getAttribute('href');
+      if (!href) return;
+
+      // Ignore external links, mailto, tel, or target="_blank"
+      if (
+        href.startsWith('http://') ||
+        href.startsWith('https://') ||
+        href.startsWith('mailto:') ||
+        href.startsWith('tel:') ||
+        anchor.target === '_blank'
+      ) {
+        return;
+      }
+
+      // If pure in-page hash scroll like href="#chapter-01" on current page
+      if (href.startsWith('#')) {
+        const hashId = href.slice(1);
+        if (hashId) {
+          const el = document.getElementById(hashId);
+          if (el) {
+            e.preventDefault();
+            el.scrollIntoView({ behavior: motionEnabled ? 'smooth' : 'auto' });
+            window.history.pushState(null, '', href);
+          }
+        }
+        return;
+      }
+
+      // Route transition (e.g. "/debugger", "/sessions", "/login", "/sessions#playground")
+      e.preventDefault();
+      navigate(href);
+    };
+
+    document.addEventListener('click', handleGlobalClick);
+    return () => document.removeEventListener('click', handleGlobalClick);
+  }, [navigate, motionEnabled, currentPath]);
 
   const isDebugger = currentPath === '/debugger';
   const isSessions = currentPath === '/sessions' || currentPath === '/sessions/playground';

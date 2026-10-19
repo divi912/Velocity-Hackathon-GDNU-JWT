@@ -59,10 +59,17 @@ export function Navigation({
   }, [currentPath]);
 
   const handleLinkClick = (e: React.MouseEvent<HTMLAnchorElement>, path: string) => {
-    if (path.startsWith('#') || path.includes('#')) {
-      // Allow standard hash scrolling
+    // If it's a pure in-page hash scroll on the current page
+    if (path.startsWith('#')) {
+      const elem = document.getElementById(path.slice(1));
+      if (elem) {
+        e.preventDefault();
+        elem.scrollIntoView({ behavior: motionEnabled ? 'smooth' : 'auto' });
+        window.history.pushState(null, '', path);
+      }
       return;
     }
+
     if (onNavigate) {
       e.preventDefault();
       onNavigate(path);
@@ -150,8 +157,8 @@ export function Navigation({
           >
             {/* Contextual Story Link */}
             <a
-              href={isRedis ? '/sessions#why-sessions' : '/#the-journey'}
-              onClick={e => !isRedis && currentPath !== '/' ? handleLinkClick(e, '/') : undefined}
+              href={isRedis ? '#why-sessions' : '#the-journey'}
+              onClick={e => handleLinkClick(e, isRedis ? '#why-sessions' : '#the-journey')}
               className="py-4 underline-offset-4 hover:underline"
             >
               {isRedis ? 'Session story' : 'JWT story'}
@@ -171,8 +178,8 @@ export function Navigation({
 
             {/* Redis Session Console Link */}
             <a
-              href="/sessions#playground"
-              onClick={e => !isRedis ? handleLinkClick(e, '/sessions') : undefined}
+              href={isRedis ? '#playground' : '/sessions#playground'}
+              onClick={e => handleLinkClick(e, isRedis ? '#playground' : '/sessions#playground')}
               className="py-4 underline-offset-4 hover:underline flex items-center gap-1.5"
             >
               <Server size={12} strokeWidth={1.5} />
@@ -194,7 +201,8 @@ export function Navigation({
 
             {/* Field Notes or Comparison Link */}
             <a
-              href={isRedis ? '/sessions#comparison' : '/#field-notes'}
+              href={isRedis ? '#comparison' : '#field-notes'}
+              onClick={e => handleLinkClick(e, isRedis ? '#comparison' : '#field-notes')}
               className="py-4 underline-offset-4 hover:underline"
             >
               {isRedis ? 'Comparison' : 'Field notes'}
